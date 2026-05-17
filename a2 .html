@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2 İngilizce Kelime Kartları - İngilizce'den Türkçe'ye</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .stat-card.active {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.25);
+            box-shadow: 0 0 12px rgba(233,69,96,0.3);
+        }
+
+        .stat-card .title { font-size: 11px; color: #ccc; margin-bottom: 3px; }
+        .stat-card .count { font-size: 20px; font-weight: bold; color: #e94560; }
+
+        .flashcard-container {
+            width: 100%;
+            max-width: 550px;
+            height: 370px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped {
+            transform: rotateX(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .front {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            color: #1a1a2e;
+            border-bottom: 4px solid #e94560;
+        }
+
+        .back {
+            background: linear-gradient(145deg, #e94560, #b8304a);
+            color: white;
+            transform: rotateX(180deg);
+        }
+
+        .front .word-en { 
+            font-size: 32px; 
+            font-weight: bold; 
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .front .word-pron { 
+            font-size: 18px; 
+            opacity: 0.8; 
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.08);
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-family: inherit;
+        }
+        .back .word-meaning { 
+            font-size: 26px; 
+            font-weight: bold; 
+            line-height: 1.4;
+        }
+        .back .word-meaning2 {
+            font-size: 18px;
+            opacity: 0.85;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+        .flip-hint { margin-top: 20px; font-size: 11px; color: #999; }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 700px;
+            margin-bottom: 18px;
+        }
+
+        button {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+        button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        button:active { transform: scale(0.96); }
+
+        .btn-correct { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+        .btn-incorrect { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .btn-unknown { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+        .btn-action { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .btn-reset { background: linear-gradient(135deg, #6c5ce7, #5b4bc4); color: white; }
+
+        .keyboard-hint {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 15px;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 30px;
+        }
+
+        .keyboard-hint b { color: #ffd700; }
+        
+        @media (max-width: 550px) {
+            .front .word-en { font-size: 24px; }
+            .front .word-pron { font-size: 14px; }
+            .back .word-meaning { font-size: 20px; }
+            .back .word-meaning2 { font-size: 14px; }
+            button { padding: 7px 12px; font-size: 11px; }
+            .stat-card { padding: 6px 12px; }
+            .stat-card .count { font-size: 16px; }
+            .flashcard-container { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🎴 A2 Kelime Kartları</h1>
+        <p>İngilizce ➜ Türkçe | Türkçe okunuş | Otomatik kayıt</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card active" id="tab-main" onclick="switchFolder('main')"><div class="title">📚 Ana Havuz</div><div class="count" id="count-main">0</div></div>
+        <div class="stat-card" id="tab-correct" onclick="switchFolder('correct')"><div class="title">✅ Bildiklerim</div><div class="count" id="count-correct">0</div></div>
+        <div class="stat-card" id="tab-incorrect" onclick="switchFolder('incorrect')"><div class="title">❌ Karıştırdıklarım</div><div class="count" id="count-incorrect">0</div></div>
+        <div class="stat-card" id="tab-unknown" onclick="switchFolder('unknown')"><div class="title">🔄 Tekrar</div><div class="count" id="count-unknown">0</div></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-action" onclick="shuffleCurrentFolder()">🔀 Karıştır</button>
+        <button class="btn-reset" onclick="resetAllData()">🔄 Sıfırla</button>
+    </div>
+
+    <div class="flashcard-container" onclick="flipCard()">
+        <div class="flashcard" id="card">
+            <div class="face front">
+                <div class="word-en" id="card-en">Yükleniyor...</div>
+                <div class="word-pron" id="card-pron">-</div>
+                <div class="flip-hint">🖱️ Tıkla veya Boşluk</div>
+            </div>
+            <div class="face back">
+                <div class="word-meaning" id="card-meaning1">anlam</div>
+                <div class="word-meaning2" id="card-meaning2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-correct" onclick="moveWord('correct')">✅ Bildim (1)</button>
+        <button class="btn-incorrect" onclick="moveWord('incorrect')">❌ Karıştırdım (2)</button>
+        <button class="btn-unknown" onclick="moveWord('unknown')">🔄 Tekrar (3)</button>
+        <button class="btn-action" onclick="nextCard()">⏭️ Sonraki (→)</button>
+    </div>
+
+    <div class="keyboard-hint">
+        ⌨️ Kısayollar: <b>Boşluk</b> = Çevir | <b>1</b> = Bildim | <b>2</b> = Karıştırdım | <b>3</b> = Tekrar | <b>→</b> = Sonraki
+    </div>
+
+    <script>
+        // ======================== KELİME VERİTABANI (İngilizce ➜ Türkçe) ========================
+        // Her kelime: İngilizce|Türkçe Okunuş|1.Anlam|2.Anlam (varsa)
+        const wordDatabase = [
+            ["ability", "ebiliti", "yetenek", "kabiliyet"],
+            ["able", "eybıl", "yapabilen", "becerikli"],
+            ["abroad", "ıbrood", "yurt dışına", "yurt dışında"],
+            ["accept", "eksept", "kabul etmek", "almak"],
+            ["accident", "eksidınt", "kaza", "rastlantı"],
+            ["according to", "ekording tu", "göre", "uyarınca"],
+            ["achieve", "eçiv", "başarmak", "elde etmek"],
+            ["act", "ekt", "davranmak", "hareket etmek"],
+            ["active", "ektif", "aktif", "etkin"],
+            ["actually", "ekçuali", "aslında", "gerçekte"],
+            ["adult", "edalt", "yetişkin", "erişkin"],
+            ["advantage", "edvantıc", "avantaj", "üstünlük"],
+            ["adventure", "edvençır", "macera", "serüven"],
+            ["advertise", "edvırtays", "reklam yapmak", "tanıtmak"],
+            ["advertisement", "edvörtismınt", "reklam", "ilan"],
+            ["affect", "efekt", "etkilemek", "dokunmak"],
+            ["after", "aftır", "sonra", "ardından"],
+            ["against", "egaynst", "karşı", "aykırı"],
+            ["alive", "ılayv", "canlı", "diri"],
+            ["allow", "ılav", "izin vermek", "müsaade etmek"],
+            ["almost", "olmost", "neredeyse", "hemen hemen"],
+            ["alone", "ılon", "yalnız", "tek başına"],
+            ["already", "olredi", "zaten", "çoktan"],
+            ["although", "oldov", "rağmen", "her ne kadar"],
+            ["among", "emang", "arasında", "arasına"],
+            ["amount", "emaunt", "miktar", "tutar"],
+            ["ancient", "eyşnt", "antik", "eski"],
+            ["angrily", "engrili", "öfkeyle", "sinirle"],
+            ["ankle", "engkl", "ayak bileği", ""],
+            ["appear", "epir", "görünmek", "belirmek"],
+            ["appearance", "epirıns", "görünüş", "dış görünüm"],
+            ["apply", "ıplay", "başvurmak", "uygulamak"],
+            ["architect", "arkitekt", "mimar", ""],
+            ["architecture", "arkitekçır", "mimarlık", "bina tasarımı"],
+            ["argue", "argyu", "tartışmak", "kavga etmek"],
+            ["argument", "argyumınt", "tartışma", "argüman"],
+            ["army", "armi", "ordu", "askeriye"],
+            ["arrange", "ıreync", "düzenlemek", "ayarlamak"],
+            ["attack", "ıtek", "saldırı", "hücum"],
+            ["attend", "ıtend", "katılmak", "devam etmek"],
+            ["attention", "ıtenşın", "dikkat", "ilgi"],
+            ["attractive", "ıtraktiv", "çekici", "cazibeli"],
+            ["audience", "odiyıns", "izleyici", "seyirci"],
+            ["author", "otır", "yazar", "muharrir"],
+            ["available", "ıveylıbıl", "mevcut", "ulaşılabilir"],
+            ["average", "evrıc", "ortalama", "sıradan"],
+            ["avoid", "ıvoyt", "kaçınmak", "sakınmak"],
+            ["award", "ıvord", "ödül", "mükafat"],
+            ["awful", "ofıl", "berbat", "korkunç"],
+            ["background", "bekgraund", "arka plan", "geçmiş"],
+            ["badly", "bedli", "kötü şekilde", "fena halde"],
+            ["bear", "ber", "ayı", "katlanmak"],
+            ["beat", "bit", "vurmak", "yenmek"],
+            ["behave", "bihayv", "davranmak", "hareket etmek"],
+            ["behaviour", "bihayvyır", "davranış", "tutum"],
+            ["belong", "bilonğ", "ait olmak", "mensup olmak"],
+            ["benefit", "benifit", "fayda", "yarar"],
+            ["birth", "bırt", "doğum", "başlangıç"],
+            ["blood", "blad", "kan", "soy"],
+            ["board", "bord", "tahta", "kurul"],
+            ["brain", "breyn", "beyin", "akıl"],
+            ["bridge", "bric", "köprü", "bağlantı"],
+            ["bright", "brayt", "parlak", "akıllı"],
+            ["brilliant", "brilyınt", "parlak", "zeki"],
+            ["broken", "brokın", "kırık", "bozuk"],
+            ["care", "ker", "önemsemek", "bakmak"],
+            ["careful", "kerfıl", "dikkatli", "özenli"],
+            ["carefully", "kerfıli", "dikkatlice", "özenle"],
+            ["cause", "koz", "neden", "sebep"],
+            ["celebrate", "selibreyt", "kutlamak", ""],
+            ["celebrity", "selebrıti", "ünlü", "şöhret"],
+            ["certain", "sörtın", "kesin", "belli"],
+            ["certainly", "sörtınli", "kesinlikle", "elbette"],
+            ["chance", "çans", "şans", "fırsat"],
+            ["character", "keriktr", "karakter", "kişilik"],
+            ["chat", "çet", "sohbet", "muhabbet"],
+            ["check", "çek", "kontrol", "çek"],
+            ["chemistry", "kemistri", "kimya", ""],
+            ["choice", "çoys", "seçim", "tercih"],
+            ["clear", "klir", "temiz", "açık"],
+            ["clearly", "klirli", "açıkça", "net şekilde"],
+            ["clever", "klevır", "zeki", "akıllı"],
+            ["climate", "klaymıt", "iklim", "hava koşulları"],
+            ["collect", "kolekt", "toplamak", "biriktirmek"],
+            ["column", "kolem", "sütun", "kolon"],
+            ["comedy", "komıdi", "komedi", "güldürü"],
+            ["comfortable", "kamfırtıbıl", "rahat", "konforlu"],
+            ["comment", "koment", "yorum", "açıklama"],
+            ["communicate", "komyunikeyt", "iletişim kurmak", "haberleşmek"],
+            ["community", "komyuniti", "topluluk", "cemiyet"],
+            ["compete", "kompit", "yarışmak", "rekabet etmek"],
+            ["competition", "kompişın", "yarışma", "rekabet"],
+            ["complain", "kompleyn", "şikayet etmek", "yakınmak"],
+            ["completely", "komplitli", "tamamen", "bütünüyle"],
+            ["condition", "kondişın", "durum", "koşul"],
+            ["conference", "konfırıns", "konferans", "toplantı"],
+            ["connect", "konekt", "bağlamak", "birleştirmek"],
+            ["connected", "konektid", "bağlı", "ilgili"],
+            ["consider", "konsidır", "düşünmek", "değerlendirmek"],
+            ["contain", "konteyn", "içermek", "kapsamak"],
+            ["context", "kontekst", "bağlam", "içerik"],
+            ["continent", "kontinınt", "kıta", "anakara"],
+            ["continue", "kontinyu", "devam etmek", "sürmek"],
+            ["control", "kontrol", "kontrol", "denetim"],
+            ["copy", "kapi", "kopya", "kopyalamak"],
+            ["corner", "kornır", "köşe", "kuytu"],
+            ["correctly", "korektli", "doğru şekilde", "hatasızca"],
+            ["count", "kaunt", "saymak", "hesaplamak"],
+            ["couple", "kapıl", "çift", "birkaç"],
+            ["cover", "kavır", "örtmek", "kaplamak"],
+            ["crazy", "krezi", "deli", "çılgın"],
+            ["creative", "kriyeytiv", "yaratıcı", "özgün"],
+            ["credit", "kredit", "kredi", "itibar"],
+            ["crime", "krayim", "suç", "cürüm"],
+            ["criminal", "kriminıl", "suçlu", "kriminal"],
+            ["cross", "kros", "çapraz", "karşıya geçmek"],
+            ["crowd", "kraud", "kalabalık", "topluluk"],
+            ["crowded", "kraudid", "kalabalık", "dolu"],
+            ["cry", "kray", "ağlamak", "bağırmak"],
+            ["daily", "deyli", "günlük", "her gün"],
+            ["danger", "deyncır", "tehlike", "risk"],
+            ["dark", "dark", "karanlık", "koyu"],
+            ["data", "deyta", "veri", "bilgi"],
+            ["dead", "ded", "ölü", "cansız"],
+            ["deal", "dil", "anlaşma", "iş"],
+            ["dear", "dir", "sevgili", "sayın"],
+            ["death", "det", "ölüm", "vefat"],
+            ["decision", "disijın", "karar", "hüküm"],
+            ["deep", "dip", "derin", "ağır"],
+            ["definitely", "definitli", "kesinlikle", "mutlaka"],
+            ["degree", "digri", "derece", "seviye"],
+            ["department", "dipartmınt", "bölüm", "departman"],
+            ["depend", "dipend", "bağlı olmak", "güvenmek"],
+            ["desert", "dezırt", "terk etmek", "çöl"],
+            ["designer", "diizaynır", "tasarımcı", "dekoratör"],
+            ["destroy", "distroy", "yok etmek", "tahrip etmek"],
+            ["detective", "detektif", "dedektif", "hafiye"],
+            ["develop", "divelıp", "geliştirmek", "gelişmek"],
+            ["device", "divays", "cihaz", "alet"],
+            ["digital", "dicital", "dijital", "sayısal"],
+            ["direct", "direkt", "doğrudan", "yönlendirmek"],
+            ["direction", "direkşın", "yön", "doğrultu"],
+            ["director", "direktır", "yönetmen", "müdür"],
+            ["disagree", "disıgri", "katılmamak", "uyuşmamak"],
+            ["disappear", "disıpir", "kaybolmak", "yok olmak"],
+            ["disaster", "dizastır", "felaket", "afet"],
+            ["discover", "diskavır", "keşfetmek", "bulmak"],
+            ["discovery", "diskovıri", "keşif", "buluş"],
+            ["discussion", "diskışın", "tartışma", "müzakere"],
+            ["disease", "diziz", "hastalık", "rahatsızlık"],
+            ["distance", "distıns", "mesafe", "uzaklık"],
+            ["document", "dokyumınt", "belge", "doküman"],
+            ["double", "dabıl", "çift", "iki kat"],
+            ["download", "daunlod", "indirmek", ""],
+            ["drama", "drama", "dram", "tiyatro"],
+            ["drawing", "droing", "resim", "çizim"],
+            ["dream", "drim", "rüya", "hayal"],
+            ["drive", "drayv", "sürmek", "araç kullanmak"],
+            ["drug", "drag", "ilaç", "uyuşturucu"],
+            ["dry", "dray", "kuru", "kurutmak"],
+            ["earn", "örn", "kazanmak", "hak etmek"],
+            ["earth", "ırt", "dünya", "yer"],
+            ["easily", "izili", "kolayca", "rahatça"],
+            ["education", "ecukeyşın", "eğitim", "öğrenim"],
+            ["effect", "ifekt", "etki", "sonuç"],
+            ["electric", "ilektrik", "elektrikli", "elektrik"],
+            ["electricity", "ilektrisiti", "elektrik", "cereyan"],
+            ["electronic", "ilektronik", "elektronik", "dijital"],
+            ["employ", "imploy", "işe almak", "çalıştırmak"],
+            ["employee", "imployi", "çalışan", "işçi"],
+            ["employer", "imployır", "işveren", "patron"],
+            ["empty", "empti", "boş", "boşaltmak"],
+            ["energy", "enıci", "enerji", "güç"],
+            ["engine", "encin", "motor", "makine"],
+            ["engineer", "encinir", "mühendis", ""],
+            ["enormous", "inormıs", "devasa", "kocaman"],
+            ["enter", "entır", "girmek", "katılmak"],
+            ["environment", "invayrınmınt", "çevre", "ortam"],
+            ["equipment", "ikuipmınt", "ekipman", "donanım"],
+            ["error", "erır", "hata", "yanlış"],
+            ["especially", "ispeşili", "özellikle", "bilhassa"],
+            ["evidence", "evidıns", "delil", "kanıt"],
+            ["exact", "igzekt", "tam", "kesin"],
+            ["exactly", "igzektli", "tam olarak", "kesinlikle"],
+            ["excellent", "ekselınt", "mükemmel", "harika"],
+            ["except", "iksept", "dışında", "hariç"],
+            ["exist", "igzist", "var olmak", "bulunmak"],
+            ["expect", "ikspekt", "beklemek", "ummak"],
+            ["experience", "ikspiriıns", "deneyim", "tecrübe"],
+            ["experiment", "iksperimınt", "deney", "tecrübe"],
+            ["expert", "ekspört", "uzman", "bilirkişi"],
+            ["explanation", "ekspleneyşın", "açıklama", "izah"],
+            ["express", "ikspres", "ifade etmek", "anlatmak"],
+            ["expression", "ikspreşın", "ifade", "anlatım"],
+            ["extreme", "ikstrim", "aşırı", "ekstrem"],
+            ["extremely", "ikstrimli", "aşırı derecede", "son derece"],
+            ["factor", "fektır", "etken", "faktör"],
+            ["factory", "fektıri", "fabrika", "imalathane"],
+            ["fail", "feyl", "başarısız olmak", "kalmak"],
+            ["fair", "fer", "adil", "fuar"],
+            ["fall", "fol", "düşmek", "sonbahar"],
+            ["fan", "fen", "hayran", "taraftar"],
+            ["farm", "farm", "çiftlik", "tarla"],
+            ["fashion", "feşın", "moda", "stil"],
+            ["fear", "fir", "korku", "endişe"],
+            ["feature", "fiçır", "özellik", "karakteristik"],
+            ["feed", "fid", "beslemek", "yedirmek"],
+            ["female", "fimeyl", "dişi", "kadın"],
+            ["fiction", "fikşın", "kurgu", "roman"],
+            ["field", "fild", "alan", "tarla"],
+            ["fight", "fayt", "kavga", "dövüş"],
+            ["figure", "figır", "şekil", "rakam"],
+            ["film", "film", "film", "sinema"],
+            ["final", "faynıl", "final", "son"],
+            ["finally", "faynıli", "sonunda", "nihayet"],
+            ["finger", "fingır", "parmak", ""],
+            ["finish", "finiş", "bitirmek", "tamamlamak"],
+            ["fit", "fit", "uymak", "uygun olmak"],
+            ["fix", "fiks", "tamir etmek", "düzeltmek"],
+            ["flat", "flet", "düz", "apartman dairesi"],
+            ["focus", "fokıs", "odak", "yoğunlaşmak"],
+            ["foreign", "forin", "yabancı", "ecnebi"],
+            ["forest", "forest", "orman", "ağaçlık"],
+            ["formal", "formıl", "resmi", "formel"],
+            ["fortunately", "forçunıtli", "neyse ki", "şans eseri"],
+            ["forward", "forvırd", "ileri", "öne"],
+            ["free", "fri", "özgür", "bedava"],
+            ["fresh", "freş", "taze", "yeni"],
+            ["furniture", "fırniçır", "mobilya", "ev eşyası"],
+            ["future", "fyuuçır", "gelecek", "istikbal"],
+            ["general", "cenırıl", "genel", "yaygın"],
+            ["gift", "gift", "hediye", "armağan"],
+            ["goal", "gol", "amaç", "hedef"],
+            ["government", "govırmınt", "hükümet", "devlet"],
+            ["grass", "gras", "çim", "ot"],
+            ["greet", "grit", "selamlamak", "karşılamak"],
+            ["ground", "graund", "zemin", "yer"],
+            ["guest", "gest", "misafir", "konuk"],
+            ["guide", "gayd", "rehber", "kılavuz"],
+            ["habit", "hebit", "alışkanlık", "huy"],
+            ["happily", "hepili", "mutlulukla", "neşeyle"],
+            ["headache", "hedeyk", "baş ağrısı", "dert"],
+            ["heart", "hart", "kalp", "yürek"],
+            ["heat", "hit", "ısı", "sıcaklık"],
+            ["heavy", "hevi", "ağır", "yoğun"],
+            ["height", "hayt", "yükseklik", "boy"],
+            ["helpful", "helpfıl", "yardımsever", "faydalı"],
+            ["hero", "hiro", "kahraman", ""],
+            ["hide", "hayd", "saklamak", "gizlemek"],
+            ["hit", "hit", "vurmak", "çarpmak"],
+            ["hold", "hold", "tutmak", "sahip olmak"],
+            ["hole", "hol", "delik", "çukur"],
+            ["huge", "huc", "devasa", "kocaman"],
+            ["human", "hyumın", "insan", "beşer"],
+            ["hurt", "hört", "incitmek", "yaralamak"],
+            ["ideal", "aydiyil", "ideal", "mükemmel"],
+            ["identify", "aydentifay", "tanımlamak", "teşhis etmek"],
+            ["ill", "il", "hasta", "rahatsız"],
+            ["illness", "ilnıs", "hastalık", "rahatsızlık"],
+            ["image", "imic", "imaj", "görüntü"],
+            ["immediately", "imidiyıtli", "hemen", "derhal"],
+            ["impossible", "impasıbıl", "imkansız", "olanaksız"],
+            ["increase", "inkris", "artmak", "çoğalmak"],
+            ["incredible", "inkredibıl", "inanılmaz", "olağanüstü"],
+            ["independent", "indipendınt", "bağımsız", "özgür"],
+            ["individual", "individcul", "birey", "şahıs"],
+            ["industry", "indastri", "sanayi", "endüstri"],
+            ["injury", "incıri", "yaralanma", "incinme"],
+            ["insect", "insekt", "böcek", "haşere"],
+            ["inside", "insayd", "iç", "içeri"],
+            ["instead", "insted", "yerine", "onun yerine"],
+            ["instruction", "instrakşın", "talimat", "yönerge"],
+            ["instructor", "instraktır", "eğitmen", "antrenör"],
+            ["instrument", "instrumınt", "enstrüman", "alet"],
+            ["intelligent", "intelicınt", "zeki", "akıllı"],
+            ["international", "intörneşın", "uluslararası", "milletlerarası"],
+            ["introduction", "intro dakşın", "giriş", "tanıtım"],
+            ["invent", "invent", "icat etmek", "bulmak"],
+            ["invention", "invenşın", "icat", "buluş"],
+            ["invitation", "inviteyşın", "davet", "davetiye"],
+            ["invite", "invayt", "davet etmek", "çağırmak"],
+            ["involve", "involv", "içermek", "kapsamak"],
+            ["item", "aytım", "madde", "kalem"],
+            ["joke", "cok", "şaka", "espri"],
+            ["journalist", "cörnalist", "gazeteci", "muhabir"],
+            ["jump", "camp", "zıplamak", "atlamak"],
+            ["kid", "kid", "çocuk", "evlat"],
+            ["kill", "kil", "öldürmek", "katletmek"],
+            ["king", "king", "kral", "hükümdar"],
+            ["knee", "ni", "diz", ""],
+            ["knife", "nayf", "bıçak", "kesici alet"],
+            ["knock", "nak", "vurmak", "çalmak"],
+            ["knowledge", "nolic", "bilgi", "malumat"],
+            ["lady", "leydi", "bayan", "hanım"],
+            ["lake", "leyk", "göl", "su birikintisi"],
+            ["lamp", "lamp", "lamba", "kandil"],
+            ["land", "lend", "kara", "arazi"],
+            ["laptop", "laptop", "dizüstü bilgisayar", ""],
+            ["last", "last", "son", "geçen"],
+            ["later", "leydır", "daha sonra", "sonradan"],
+            ["laughter", "laftır", "kahkaha", "gülme"],
+            ["law", "lo", "yasa", "kanun"],
+            ["lawyer", "loyır", "avukat", "hukukçu"],
+            ["lazy", "leyzi", "tembel", "aylak"],
+            ["lead", "lid", "yol göstermek", "liderlik etmek"],
+            ["leader", "lidır", "lider", "önder"],
+            ["learning", "lörning", "öğrenme", "öğrenim"],
+            ["least", "list", "en az", "asgari"],
+            ["lecture", "lekçır", "konferans", "ders"],
+            ["lend", "lend", "ödünç vermek", "borç vermek"],
+            ["less", "les", "daha az", "az"],
+            ["level", "levıl", "seviye", "düzey"],
+            ["lifestyle", "layfstayl", "yaşam tarzı", "hayat biçimi"],
+            ["lift", "lift", "kaldırmak", "asansör"],
+            ["likely", "laykli", "olası", "muhtemel"],
+            ["link", "link", "bağlantı", "bağlamak"],
+            ["lock", "lak", "kilit", "kilitlemek"],
+            ["lost", "lost", "kayıp", "kaybolmuş"],
+            ["loud", "laud", "yüksek sesli", "gürültülü"],
+            ["loudly", "laudli", "yüksek sesle", "gürültüyle"],
+            ["lovely", "lavli", "güzel", "hoş"],
+            ["low", "lo", "düşük", "alçak"],
+            ["luck", "lak", "şans", "talih"],
+            ["lucky", "laki", "şanslı", "talihli"],
+            ["major", "meycır", "ana", "büyük"],
+            ["male", "meyl", "erkek", "bay"],
+            ["manage", "menic", "yönetmek", "idare etmek"],
+            ["manager", "menicır", "yönetici", "müdür"],
+            ["manner", "menır", "tavır", "yöntem"],
+            ["mark", "mark", "işaret", "iz"],
+            ["marry", "meri", "evlenmek", "nikahlanmak"],
+            ["material", "matiriyıl", "malzeme", "madde"],
+            ["matter", "metır", "sorun", "konu"],
+            ["media", "midiyi", "medya", "basın"],
+            ["medical", "medikıl", "tıbbi", "medikal"],
+            ["medicine", "medisin", "ilaç", "tıp"],
+            ["memory", "memıri", "bellek", "anı"],
+            ["mention", "menşın", "bahsetmek", "değinmek"],
+            ["method", "metod", "yöntem", "metot"],
+            ["middle", "midıl", "orta", "merkez"],
+            ["mind", "maynd", "zihin", "akıl"],
+            ["mirror", "mirır", "ayna", "yansıtmak"],
+            ["missing", "misinğ", "kayıp", "eksik"],
+            ["mobile", "mobayl", "mobil", "taşınabilir"],
+            ["monkey", "manki", "maymun", ""],
+            ["moon", "mun", "ay", "uydu"],
+            ["mostly", "mostli", "çoğunlukla", "genellikle"],
+            ["movement", "muvmınt", "hareket", "akım"],
+            ["musical", "myuzikıl", "müzikal", "müzikli"],
+            ["musician", "myuzişın", "müzisyen", "çalgıcı"],
+            ["narrow", "nerov", "dar", "ensiz"],
+            ["national", "neşınıl", "ulusal", "milli"],
+            ["nature", "neyçır", "doğa", "tabiat"],
+            ["nearly", "nirli", "neredeyse", "hemen hemen"],
+            ["necessary", "nesısıri", "gerekli", "zorunlu"],
+            ["neck", "nek", "boyun", "ense"],
+            ["nervous", "nörvıs", "sinirli", "gergin"],
+            ["network", "netvörk", "ağ", "şebeke"],
+            ["noise", "noyz", "gürültü", "ses"],
+            ["noisy", "noyzi", "gürültülü", "patırtılı"],
+            ["normal", "normıl", "normal", "olağan"],
+            ["normally", "normıli", "normalde", "genellikle"],
+            ["notice", "notis", "fark etmek", "dikkat etmek"],
+            ["novel", "novıl", "roman", "yeni"],
+            ["offer", "ofır", "teklif", "sunmak"],
+            ["officer", "ofisır", "memur", "subay"],
+            ["opportunity", "oportuniti", "fırsat", "imkan"],
+            ["option", "opşın", "seçenek", "alternatif"],
+            ["ordinary", "ordınırı", "sıradan", "normal"],
+            ["organization", "organizeyşın", "organizasyon", "kuruluş"],
+            ["organize", "organayz", "organize etmek", "düzenlemek"],
+            ["original", "oricinıl", "orijinal", "özgün"],
+            ["outside", "autsayd", "dışarıda", "dışarı"],
+            ["own", "on", "sahip olmak", "kendi"],
+            ["owner", "onır", "sahip", "mal sahibi"],
+            ["pain", "peyn", "ağrı", "acı"],
+            ["palace", "pelis", "saray", "köşk"],
+            ["particular", "partikülyır", "belirli", "özel"],
+            ["pass", "pas", "geçmek", "pas vermek"],
+            ["passenger", "pesınicır", "yolcu", "gezgin"],
+            ["past", "past", "geçmiş", "önceki"],
+            ["patient", "peyşınt", "sabırlı", "hasta"],
+            ["peace", "pis", "barış", "huzur"],
+            ["perform", "pörform", "sahnelemek", "yapmak"],
+            ["perhaps", "pörhaps", "belki", "muhtemelen"],
+            ["permission", "pörmişın", "izin", "müsaade"],
+            ["personality", "pörsıniliti", "kişilik", "karakter"],
+            ["physical", "fizikıl", "fiziksel", "bedensel"],
+            ["physics", "fiziks", "fizik", ""],
+            ["pick", "pik", "seçmek", "toplamak"],
+            ["pilot", "paylot", "pilot", ""],
+            ["planet", "plenit", "gezegen", "seyyare"],
+            ["plastic", "plastik", "plastik", ""],
+            ["platform", "platform", "platform", "saha"],
+            ["please", "pliz", "lütfen", "memnun etmek"],
+            ["pleased", "plizd", "memnun", "hoşnut"],
+            ["pocket", "pakit", "cep", "koymak"],
+            ["polite", "polayt", "kibar", "nazik"],
+            ["pollution", "poluşın", "kirlilik", "çevre kirliliği"],
+            ["population", "popyuleyşın", "nüfus", "ahali"],
+            ["position", "pozişın", "pozisyon", "konum"],
+            ["possibility", "posibiliti", "olasılık", "imkan"],
+            ["power", "pavır", "güç", "enerji"],
+            ["predict", "pridikt", "tahmin etmek", "önceden söylemek"],
+            ["present", "prezınt", "sunmak", "hazır"],
+            ["president", "prezidınt", "başkan", "cumhurbaşkanı"],
+            ["prevent", "privent", "önlemek", "engellemek"],
+            ["print", "print", "basmak", "yazdırmak"],
+            ["prison", "prizın", "hapishane", "cezaevi"],
+            ["prize", "prayz", "ödül", "mükafat"],
+            ["process", "proses", "süreç", "işlem"],
+            ["produce", "produs", "üretmek", "yapmak"],
+            ["professional", "profeşnıl", "profesyonel", "uzman"],
+            ["professor", "profesır", "profesör", "öğretim üyesi"],
+            ["program", "program", "program", "plan"],
+            ["progress", "progres", "ilerleme", "gelişme"],
+            ["promise", "promis", "söz vermek", "vaat"],
+            ["pronounce", "pronauns", "telaffuz etmek", "söylemek"],
+            ["protect", "protekt", "korumak", "himaye etmek"],
+            ["provide", "provayd", "sağlamak", "temin etmek"],
+            ["public", "pablik", "kamu", "halk"],
+            ["publish", "pabliş", "yayınlamak", "yayımlamak"],
+            ["pull", "pul", "çekmek", "asmak"],
+            ["purpose", "pörpıs", "amaç", "hedef"],
+            ["push", "puş", "itmek", "kakmak"],
+            ["quality", "kuoliti", "kalite", "nitelik"],
+            ["quantity", "kuontiti", "miktar", "nicelik"],
+            ["queen", "kuin", "kraliçe", ""],
+            ["question", "kuesçın", "soru", "sual"],
+            ["quietly", "kuayıtli", "sessizce", "usulca"],
+            ["race", "reys", "yarış", "ırk"],
+            ["railway", "reylvey", "demiryolu", "tren yolu"],
+            ["raise", "reyz", "yükseltmek", "artırmak"],
+            ["rate", "reyt", "oran", "derece"],
+            ["rather", "radır", "biraz", "oldukça"],
+            ["reach", "riç", "ulaşmak", "erişmek"],
+            ["react", "riekt", "tepki vermek", "karşılık vermek"],
+            ["realize", "rialayz", "fark etmek", "anlamak"],
+            ["receive", "risiv", "almak", "teslim almak"],
+            ["recent", "risınt", "son", "geçen"],
+            ["recently", "risıntli", "son zamanlarda", "geçenlerde"],
+            ["recognize", "rekıgnayz", "tanımak", "fark etmek"],
+            ["recommend", "rekımend", "tavsiye etmek", "önermek"],
+            ["record", "rikord", "kaydetmek", "kayıt"],
+            ["recycle", "risaykıl", "geri dönüştürmek", ""],
+            ["reduce", "ridus", "azaltmak", "düşürmek"],
+            ["refer", "rifır", "başvurmak", "atıfta bulunmak"],
+            ["refuse", "rifuz", "reddetmek", "geri çevirmek"],
+            ["region", "ricın", "bölge", "yöre"],
+            ["regular", "regyulır", "düzenli", "normal"],
+            ["relationship", "rileyşınşip", "ilişki", "münasebet"],
+            ["remove", "rimuv", "kaldırmak", "çıkarmak"],
+            ["repair", "riper", "tamir etmek", "onarmak"],
+            ["replace", "ripleys", "yerine koymak", "değiştirmek"],
+            ["reply", "riplay", "cevap vermek", "yanıtlamak"],
+            ["report", "riport", "rapor", "haber vermek"],
+            ["reporter", "riportır", "muhabir", "haberci"],
+            ["request", "rikuest", "talep", "rica"],
+            ["research", "risörç", "araştırma", "inceleme"],
+            ["respond", "rispond", "cevap vermek", "karşılık vermek"],
+            ["response", "rispons", "cevap", "yanıt"],
+            ["rest", "rest", "dinlenme", "kalan"],
+            ["review", "rivyu", "inceleme", "gözden geçirme"],
+            ["ride", "rayd", "binmek", "sürmek"],
+            ["ring", "ring", "yüzük", "çalmak"],
+            ["rise", "rayz", "yükselmek", "doğmak"],
+            ["rock", "rak", "kaya", "sallamak"],
+            ["role", "rol", "rol", "görev"],
+            ["roof", "ruf", "çatı", "dam"],
+            ["round", "raund", "yuvarlak", "tur"],
+            ["route", "rut", "rota", "güzergah"],
+            ["rude", "rud", "kaba", "nezaketsiz"],
+            ["run", "ran", "koşmak", "çalışmak"],
+            ["safe", "seyf", "güvenli", "sağlam"],
+            ["sale", "seyl", "satış", "indirim"],
+            ["save", "seyv", "kurtarmak", "biriktirmek"],
+            ["scene", "sin", "sahne", "manzara"],
+            ["schedule", "şecul", "program", "tarife"],
+            ["score", "skor", "skor", "puan"],
+            ["screen", "skrin", "ekran", "perde"],
+            ["search", "sörç", "arama", "araştırma"],
+            ["season", "sizın", "mevsim", "sezon"],
+            ["seat", "sit", "oturma yeri", "koltuk"],
+            ["secret", "sikrit", "sır", "gizli"],
+            ["secretary", "sekritıri", "sekreter", "yazman"],
+            ["seem", "sim", "görünmek", "benzemek"],
+            ["sense", "sens", "duyu", "his"],
+            ["separate", "sepıreyt", "ayırmak", "bölmek"],
+            ["series", "siriiz", "dizi", "seri"],
+            ["serious", "siriıs", "ciddi", "ağır"],
+            ["serve", "sörv", "hizmet etmek", "sunmak"],
+            ["service", "sörvis", "servis", "hizmet"],
+            ["several", "sevırıl", "birkaç", "birçok"],
+            ["shake", "şeyk", "sallamak", "çalkalamak"],
+            ["shape", "şeyp", "şekil", "biçim"],
+            ["share", "şer", "paylaşmak", "pay"],
+            ["sheet", "şit", "çarşaf", "levha"],
+            ["ship", "şip", "gemi", "göndermek"],
+            ["shirt", "şört", "gömlek", ""],
+            ["shoe", "şu", "ayakkabı", ""],
+            ["shop", "şop", "dükkan", "mağaza"],
+            ["short", "şort", "kısa", "az"],
+            ["should", "şud", "-meli", "gerekmek"],
+            ["shoulder", "şoldır", "omuz", "üstlenmek"],
+            ["shout", "şaut", "bağırmak", "haykırmak"],
+            ["show", "şov", "göstermek", "gösteri"],
+            ["shut", "şat", "kapatmak", "kapamak"],
+            ["sick", "sik", "hasta", "rahatsız"],
+            ["side", "sayd", "yan", "taraf"],
+            ["sight", "sayt", "görüş", "manzara"],
+            ["sign", "sayn", "işaret", "imza"],
+            ["silent", "saylınt", "sessiz", "suskun"],
+            ["simple", "simpıl", "basit", "kolay"],
+            ["since", "sins", "den beri", "çünkü"],
+            ["sing", "sing", "şarkı söylemek", ""],
+            ["single", "singıl", "bekar", "tek"],
+            ["sink", "sink", "batmak", "lavabo"],
+            ["sir", "sör", "efendim", ""],
+            ["sit", "sit", "oturmak", ""],
+            ["situation", "siçueyşın", "durum", "vaziyet"],
+            ["size", "sayz", "boyut", "ebat"],
+            ["skill", "skil", "beceri", "yetenek"],
+            ["skin", "skin", "cilt", "ten"],
+            ["sky", "skay", "gökyüzü", "gök"],
+            ["sleep", "slip", "uyumak", "uyku"],
+            ["slow", "slo", "yavaş", "ağır"],
+            ["small", "smol", "küçük", "ufak"],
+            ["smart", "smart", "zeki", "akıllı"],
+            ["smell", "smel", "kokmak", "koku"],
+            ["smile", "smayl", "gülümsemek", "gülücük"],
+            ["smoke", "smok", "duman", "sigara içmek"],
+            ["smooth", "smuv", "pürüzsüz", "düzgün"],
+            ["social", "soşıl", "sosyal", "toplumsal"],
+            ["society", "sosayıti", "toplum", "cemiyet"],
+            ["soft", "soft", "yumuşak", "hafif"],
+            ["solution", "soluşın", "çözüm", "çözelti"],
+            ["solve", "solv", "çözmek", "halletmek"],
+            ["some", "sam", "biraz", "bazı"],
+            ["someone", "samvan", "birisi", ""],
+            ["something", "samting", "bir şey", ""],
+            ["sometimes", "sam tayms", "bazen", "ara sıra"],
+            ["son", "san", "oğul", "evlat"],
+            ["song", "song", "şarkı", ""],
+            ["soon", "sun", "yakında", "birazdan"],
+            ["sorry", "sori", "üzgün", "pardon"],
+            ["sort", "sort", "çeşit", "tür"],
+            ["sound", "saund", "ses", "sağlam"],
+            ["soup", "sup", "çorba", ""],
+            ["source", "sors", "kaynak", "menşe"],
+            ["south", "saut", "güney", "lodos"],
+            ["space", "speys", "uzay", "boşluk"],
+            ["speak", "spik", "konuşmak", "söylemek"],
+            ["special", "speşıl", "özel", "özellikli"],
+            ["specific", "spisifik", "belirli", "spesifik"],
+            ["speech", "spiç", "konuşma", "söylev"],
+            ["speed", "spid", "hız", "sürat"],
+            ["spell", "spel", "hecelemek", "büyü"],
+            ["spend", "spend", "harcamak", "geçirmek"],
+            ["sport", "sport", "spor", "egzersiz"],
+            ["spring", "spring", "bahar", "yay"],
+            ["staff", "staf", "personel", "kadro"],
+            ["stage", "steyc", "sahne", "evre"],
+            ["stand", "stend", "durmak", "ayakta olmak"],
+            ["standard", "stendırd", "standart", "ölçüt"],
+            ["star", "star", "yıldız", "star"],
+            ["start", "start", "başlamak", "başlatmak"],
+            ["state", "steyt", "durum", "devlet"],
+            ["station", "steyşın", "istasyon", "durak"],
+            ["stay", "stey", "kalmak", "bulunmak"],
+            ["step", "step", "adım", "basamak"],
+            ["stick", "stik", "sopa", "yapışmak"],
+            ["still", "stil", "hala", "durgun"],
+            ["stone", "ston", "taş", "kaya"],
+            ["stop", "stop", "durmak", "kesmek"],
+            ["store", "stor", "mağaza", "depolamak"],
+            ["storm", "storm", "fırtına", "kasırga"],
+            ["story", "stori", "hikaye", "öykü"],
+            ["straight", "streyt", "düz", "doğru"],
+            ["strange", "streync", "garip", "tuhaf"],
+            ["strategy", "stretıci", "strateji", "plan"],
+            ["street", "strit", "cadde", "sokak"],
+            ["strength", "strengt", "güç", "kuvvet"],
+            ["stress", "stres", "stres", "gerilim"],
+            ["stretch", "streç", "esnemek", "uzatmak"],
+            ["strict", "strikt", "katı", "sert"],
+            ["strike", "strayk", "vurmak", "grev"],
+            ["strong", "strong", "güçlü", "kuvvetli"],
+            ["structure", "strakçır", "yapı", "bina"],
+            ["struggle", "stragıl", "mücadele", "çabalamak"],
+            ["student", "studınt", "öğrenci", "talebe"],
+            ["study", "stadi", "çalışmak", "incelemek"],
+            ["stuff", "staf", "şey", "malzeme"],
+            ["stupid", "stupid", "aptal", "salak"],
+            ["style", "stayl", "stil", "tarz"],
+            ["subject", "sabcekt", "konu", "ders"],
+            ["succeed", "saksid", "başarmak", "başarılı olmak"],
+            ["success", "sakses", "başarı", "muvaffakiyet"],
+            ["successful", "saksesfıl", "başarılı", ""],
+            ["such", "saç", "böyle", "bu kadar"],
+            ["sudden", "sadın", "ani", "beklenmedik"],
+            ["suddenly", "sadınli", "aniden", "birdenbire"],
+            ["suffer", "safır", "acı çekmek", "muzdarip olmak"],
+            ["sugar", "şugır", "şeker", ""],
+            ["suggest", "sacest", "önermek", "tavsiye etmek"],
+            ["suggestion", "sacestçın", "öneri", "tavsiye"],
+            ["suit", "sut", "takım elbise", "uymak"],
+            ["summer", "samır", "yaz", ""],
+            ["sun", "san", "güneş", ""],
+            ["support", "sıport", "desteklemek", "yardım etmek"],
+            ["suppose", "sıpoz", "farz etmek", "sanmak"],
+            ["sure", "şur", "emin", "kesin"],
+            ["surprise", "sıprayz", "sürpriz", "şaşırtmak"],
+            ["surprised", "sıprayzd", "şaşırmış", "hayrete düşmüş"],
+            ["survey", "sörvey", "anket", "araştırma"],
+            ["sweet", "svit", "tatlı", "şeker"],
+            ["swim", "svim", "yüzmek", ""]
+        ];
+
+        const STORAGE_KEY = 'a2_word_folders_en_tr';
+        const allWordObjects = wordDatabase.map(data => ({
+            en: data[0],
+            pronunciation: data[1],
+            meaning1: data[2],
+            meaning2: data[3] || ""
+        }));
+
+        let folders = { main: [], correct: [], incorrect: [], unknown: [] };
+        let currentFolder = 'main';
+        let currentIndex = 0;
+        let isFlipped = false;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = initAudio();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.15;
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                } else if (type === 'incorrect') {
+                    osc.type = 'triangle';
+                    osc.frequency.value = 440;
+                    gain.gain.value = 0.12;
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.25);
+                } else if (type === 'unknown') {
+                    osc.type = 'square';
+                    osc.frequency.value = 660;
+                    gain.gain.value = 0.1;
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.18);
+                }
+            } catch(e) {}
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.main && parsed.correct && parsed.incorrect && parsed.unknown) {
+                        folders = parsed;
+                        return;
+                    }
+                } catch(e) {}
+            }
+            folders = {
+                main: [...allWordObjects],
+                correct: [],
+                incorrect: [],
+                unknown: []
+            };
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(folders));
+        }
+
+        function updateStats() {
+            document.getElementById('count-main').innerText = folders.main.length;
+            document.getElementById('count-correct').innerText = folders.correct.length;
+            document.getElementById('count-incorrect').innerText = folders.incorrect.length;
+            document.getElementById('count-unknown').innerText = folders.unknown.length;
+            saveData();
+        }
+
+        function switchFolder(folderName) {
+            currentFolder = folderName;
+            currentIndex = 0;
+            document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`tab-${folderName}`).classList.add('active');
+            showCard();
+        }
+
+        function showCard() {
+            isFlipped = false;
+            const cardEl = document.getElementById('card');
+            cardEl.style.transition = 'none';
+            cardEl.classList.remove('flipped');
+            
+            const list = folders[currentFolder];
+            if (list.length === 0) {
+                document.getElementById('card-en').innerHTML = "📭 Boş klasör!";
+                document.getElementById('card-pron').innerHTML = "";
+                document.getElementById('card-meaning1').innerHTML = "Diğer klasörlerden taşıyabilirsin";
+                document.getElementById('card-meaning2').innerHTML = "";
+                return;
+            }
+            
+            if (currentIndex >= list.length) currentIndex = 0;
+            const word = list[currentIndex];
+            document.getElementById('card-en').innerHTML = word.en;
+            document.getElementById('card-pron').innerHTML = word.pronunciation;
+            document.getElementById('card-meaning1').innerHTML = word.meaning1;
+            document.getElementById('card-meaning2').innerHTML = word.meaning2 ? `(${word.meaning2})` : '';
+            
+            setTimeout(() => {
+                cardEl.style.transition = 'transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)';
+            }, 50);
+        }
+
+        function flipCard() {
+            const list = folders[currentFolder];
+            if (list.length === 0) return;
+            isFlipped = !isFlipped;
+            document.getElementById('card').classList.toggle('flipped', isFlipped);
+        }
+
+        function nextCard() {
+            const list = folders[currentFolder];
+            if (list.length <= 1) return;
+            currentIndex++;
+            if (currentIndex >= list.length) currentIndex = 0;
+            showCard();
+        }
+
+        function shuffleCurrentFolder() {
+            const list = folders[currentFolder];
+            for (let i = list.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [list[i], list[j]] = [list[j], list[i]];
+            }
+            currentIndex = 0;
+            showCard();
+            saveData();
+        }
+
+        function moveWord(targetFolder) {
+            const list = folders[currentFolder];
+            if (list.length === 0) return;
+            playSound(targetFolder);
+            if (currentFolder === targetFolder) { nextCard(); return; }
+            const word = list.splice(currentIndex, 1)[0];
+            folders[targetFolder].push(word);
+            updateStats();
+            if (currentIndex >= list.length) currentIndex = 0;
+            showCard();
+        }
+
+        function resetAllData() {
+            if (confirm('Tüm ilerleme silinecek! Devam etmek istiyor musun?')) {
+                folders = { main: [...allWordObjects], correct: [], incorrect: [], unknown: [] };
+                currentFolder = 'main';
+                currentIndex = 0;
+                updateStats();
+                showCard();
+                document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+                document.getElementById('tab-main').classList.add('active');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+            else if (e.code === 'ArrowRight') { e.preventDefault(); nextCard(); }
+            else if (e.key === '1') moveWord('correct');
+            else if (e.key === '2') moveWord('incorrect');
+            else if (e.key === '3') moveWord('unknown');
+        });
+
+        loadData();
+        updateStats();
+        showCard();
+        
+        document.body.addEventListener('click', function init() {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            document.body.removeEventListener('click', init);
+        });
+        
+        window.switchFolder = switchFolder;
+        window.flipCard = flipCard;
+        window.nextCard = nextCard;
+        window.shuffleCurrentFolder = shuffleCurrentFolder;
+        window.moveWord = moveWord;
+        window.resetAllData = resetAllData;
+    </script>
+</body>
+</html>
